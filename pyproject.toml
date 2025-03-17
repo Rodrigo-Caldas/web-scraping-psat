@@ -1,22 +1,24 @@
 [project]
 name = "web-scraping-ons"
 version = "0.1.0"
-description = "Web Scraping do site do ONS"
+description = "Default template for PDM package"
 authors = [
     {name = "Rodrigo-Caldas", email = "rodrigocaldas@id.uff.br"},
 ]
-dependencies = ["httpx>=0.28.1", "beautifulsoup4>=4.13.3"]
-requires-python = ">=3.12"
+dependencies = ["selenium>=4.29.0", "pydantic-settings>=2.8.1", "beautifulsoup4>=4.13.3"]
+requires-python = "==3.12.*"
 readme = "README.md"
 license = {text = "MIT"}
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
 
 [tool.pdm]
-distribution = true
+distribution = false
+
+[[tool.mypy.overrides]]
+module = [
+    "webdriver_manager.chrome",
+]
+ignore_missing_imports = true
 
 [dependency-groups]
 dev = [
@@ -24,4 +26,6 @@ dev = [
     "flake8>=7.1.2",
     "black>=25.1.0",
     "mypy>=1.15.0",
+    "isort>=6.0.1",
+    "autoflake>=2.3.1",
 ]
