@@ -13,9 +13,7 @@ from src.config import config
 class ONS:
     """Classe para navegar no site do ONS."""
 
-    def __init__(
-        self, data_inicio: datetime, data_final: datetime = datetime.today()
-    ):
+    def __init__(self, data_inicio: datetime, data_final: datetime = datetime.today()):
         """
         Configurações básicas para iniciar a classe.
 
@@ -64,18 +62,12 @@ class ONS:
         driver : WebDriver
             Driver do serviço chrome.
         """
-        ultima_altura = driver.execute_script(
-            "return document.body.scrollHeight"
-        )
+        ultima_altura = driver.execute_script("return document.body.scrollHeight")
 
         while True:
-            driver.execute_script(
-                "window.scrollBy(0, document.body.scrollHeight);"
-            )
+            driver.execute_script("window.scrollBy(0, document.body.scrollHeight);")
             time.sleep(1)
-            nova_altura = driver.execute_script(
-                "return document.body.scrollHeight"
-            )
+            nova_altura = driver.execute_script("return document.body.scrollHeight")
 
             if nova_altura == ultima_altura:
                 break
@@ -85,30 +77,20 @@ class ONS:
     def executar(self) -> None:
         """Executa o processo de baixar todos os psats."""
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(
-            "--start-maximized"
-        )  # Abre o navegador maximizado
+        chrome_options.add_argument("--start-maximized")  # Abre o navegador maximizado
 
-        driver = webdriver.Chrome(
-            service=config.service, options=chrome_options
-        )
+        driver = webdriver.Chrome(service=config.service, options=chrome_options)
 
         driver.get(config.url_login)
 
-        driver.find_element(By.ID, "username").send_keys(
-            config.data["username"]
-        )
-        driver.find_element(By.ID, "password").send_keys(
-            config.data["password"]
-        )
+        driver.find_element(By.ID, "username").send_keys(config.data["username"])
+        driver.find_element(By.ID, "password").send_keys(config.data["password"])
         driver.find_element(By.NAME, "login").click()
 
         time.sleep(3)
         driver.refresh()
 
-        driver.find_element(By.ID, "tbSearch").send_keys(
-            self.nome_produto_psat
-        )
+        driver.find_element(By.ID, "tbSearch").send_keys(self.nome_produto_psat)
         driver.find_element(By.NAME, "tbDataDe").send_keys(
             self.data_inicio.strftime("%d/%m/%Y")
         )
