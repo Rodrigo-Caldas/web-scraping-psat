@@ -1,6 +1,7 @@
 """Módulo de utilidades."""
 
 from typing import Tuple
+
 from bs4 import BeautifulSoup
 
 
@@ -29,10 +30,10 @@ def parse_login_form(html: str) -> Tuple[str, dict]:
     if not form:
         raise ValueError("No form found in the provided HTML.")
 
-    action_url = form.get("action")
+    action_url = form.get("action")  # type: ignore
 
     form_data = {}
-    for input_elem in form.find_all("input"):
+    for input_elem in form.find_all("input"):  # type: ignore
         name = input_elem.get("name")
         if name:
             # Use the provided value or default to an empty string
