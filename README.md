@@ -13,11 +13,11 @@ Acessa o site do sintegre a partir das credenciais do usuário e busca todo o hi
  :heavy_check_mark: Google Chrome instalado
  :heavy_check_mark: Python
 
-## :computer: Como instalar os pacotes?
+### :computer: Como instalar os pacotes?
 
 Para instalação dos pacotes há dois métodos: usando o gerenciador de pacotes ``pdm`` ou ``pip``.
 
-# :scroll: Via ``pdm``
+### :scroll: Via ``pdm``
 
 Rode o comando:
 
@@ -29,7 +29,9 @@ pdm install
 
 Crie um ambiente com o python 3.12 a partir do comando:
 
-```bash python3.12 -m venv web-scraping-ons```
+```bash 
+python3.12 -m venv web-scraping-ons
+```
 
 Rode o comando para ativar o ambiente:
 
