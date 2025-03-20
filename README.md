@@ -10,10 +10,10 @@ Acessa o site do sintegre a partir das credenciais do usuário e busca todo o hi
 
 ## :warning: Requisitos
 
- :heavy_check_mark: Google Chrome instalado
- :heavy_check_mark: Python
+:heavy_check_mark: Google Chrome instalado
+:heavy_check_mark: Python
 
-### :computer: Como instalar os pacotes?
+## :computer: Como instalar os pacotes?
 
 Para instalação dos pacotes há dois métodos: usando o gerenciador de pacotes ``pdm`` ou ``pip``.
 
