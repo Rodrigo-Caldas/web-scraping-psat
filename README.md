@@ -25,7 +25,7 @@ Rode o comando:
 pdm install
 ```
 
-# :pencil: Via ``pip``
+### :pencil: Via ``pip``
 
 Crie um ambiente com o python 3.12 a partir do comando:
 
@@ -43,7 +43,7 @@ source web-scraping-ons/bin/activate
 
 No arquivo ``src/config.py`` altere as credenciais para o email e senha do usuário.
 
-# Exemplo
+### Exemplo
 
 ```python
 class Configuracoes(BaseSettings):
@@ -59,7 +59,7 @@ class Configuracoes(BaseSettings):
 
 No ``src/__main__.py`` altere a variável de ``data_inicial`` e crie uma ``data_final`` para o período de coleta.
 
-# Exemplo
+### Exemplo
 
 ```python
 if __name__ == "__main__":
