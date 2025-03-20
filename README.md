@@ -11,6 +11,7 @@ Acessa o site do sintegre a partir das credenciais do usuário e busca todo o hi
 ## :warning: Requisitos
 
 :heavy_check_mark: Google Chrome instalado
+
 :heavy_check_mark: Python
 
 ## :computer: Como instalar os pacotes?
