@@ -6,8 +6,10 @@ from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
+from rich.progress import Progress, BarColumn, TextColumn
 
 from src.config import config
+from src.logit import log
 
 
 class ONS:
@@ -50,7 +52,7 @@ class ONS:
     @property
     def caminho_xpath_produto(self) -> str:
         """Caminho XPATH para botão de filtro 'Produto'."""
-        return "/html/body/form/div[12]/div/div[3]/div/div/div/div[1]/div[1]/div/div[4]/div[2]/ul/li[3]/label[1]/span"
+        return "//label[contains(text(), 'Histórico de Precipitação por Satélite')]"
 
     @staticmethod
     def descer_final_da_pagina(driver: WebDriver) -> None:
@@ -61,56 +63,108 @@ class ONS:
         ----------
         driver : WebDriver
             Driver do serviço chrome.
+
+        Raises
+        ------
+        erro
+            Erro levantado caso ocorra.
         """
-        ultima_altura = driver.execute_script("return document.body.scrollHeight")
+        try:
+            ultima_altura = driver.execute_script("return document.body.scrollHeight")
 
-        while True:
-            driver.execute_script("window.scrollBy(0, document.body.scrollHeight);")
-            time.sleep(1)
-            nova_altura = driver.execute_script("return document.body.scrollHeight")
+            while True:
+                driver.execute_script("window.scrollBy(0, document.body.scrollHeight);")
+                time.sleep(1)
+                nova_altura = driver.execute_script("return document.body.scrollHeight")
 
-            if nova_altura == ultima_altura:
-                break
+                if nova_altura == ultima_altura:
+                    break
 
-            ultima_altura = nova_altura
+                ultima_altura = nova_altura
+
+            log.info("[bright_green]Final da página concluído!")
+
+        except Exception as erro:
+            log.error("[bright_red]Erro ao descer a página!")
+            raise erro
 
     def executar(self) -> None:
-        """Executa o processo de baixar todos os psats."""
+        """
+        Executa o processo de baixar todos os psats.
+
+        Raises
+        ------
+        erro_login
+            Erro de login levantado.
+        erro_pesquisa
+            Erro de pesquisa levantado.
+        erro_ordenacao
+            Erro de ordenação levantado.
+        """
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--start-maximized")  # Abre o navegador maximizado
 
         driver = webdriver.Chrome(service=config.service, options=chrome_options)
-
         driver.get(config.url_login)
 
-        driver.find_element(By.ID, "username").send_keys(config.data["username"])
-        driver.find_element(By.ID, "password").send_keys(config.data["password"])
-        driver.find_element(By.NAME, "login").click()
+        log.info("Logando no sintegre..")
+
+        try:
+            driver.find_element(By.ID, "username").send_keys(config.data["username"])
+            driver.find_element(By.ID, "password").send_keys(config.data["password"])
+            driver.find_element(By.NAME, "login").click()
+            log.info("[bright_green]Login concluído!")
+        
+        except Exception as erro_login:
+            log.error("[bright_red]Erro no login!")
+            raise erro_login
 
         time.sleep(3)
         driver.refresh()
 
-        driver.find_element(By.ID, "tbSearch").send_keys(self.nome_produto_psat)
-        driver.find_element(By.NAME, "tbDataDe").send_keys(
-            self.data_inicio.strftime("%d/%m/%Y")
-        )
-        driver.find_element(By.NAME, "tbDataAte").send_keys(
-            self.data_final.strftime("%d/%m/%Y")
-        )
-        driver.find_element("id", "btnSearch").click()
+        log.info(f"Pesquisando produto {self.nome_produto_psat}..")
+
+        try:
+            driver.find_element(By.ID, "tbSearch").send_keys(self.nome_produto_psat)
+            driver.find_element(By.NAME, "tbDataDe").send_keys(self.data_inicio.strftime("%d/%m/%Y"))
+            driver.find_element(By.NAME, "tbDataAte").send_keys(self.data_final.strftime("%d/%m/%Y"))
+            driver.find_element("id", "btnSearch").click()
+            log.info("[bright_green]Pesquisa concluída!")
+
+        except Exception as erro_pesquisa:
+            log.error("[bright_red]Erro na pesquisa!")
+            raise erro_pesquisa
 
         time.sleep(2)
-        driver.find_element(By.CLASS_NAME, self.classe_botao_ordenar).click()
-        driver.find_element(By.XPATH, self.caminho_xpath_mais_recentes).click()
-        driver.find_element(By.XPATH, self.caminho_xpath_concordo).click()
 
-        time.sleep(0.5)
-        driver.find_element(By.XPATH, self.caminho_xpath_produto).click()
+        log.info("Ordenando o histórico no site..")
 
+        try:
+            driver.find_element(By.CLASS_NAME, self.classe_botao_ordenar).click()
+            driver.find_element(By.XPATH, self.caminho_xpath_mais_recentes).click()
+            driver.find_element(By.XPATH, self.caminho_xpath_concordo).click()
+            time.sleep(0.5)
+            driver.find_element(By.XPATH, self.caminho_xpath_produto).click()
+
+            log.info("[bright_green]Ordenação concluída!")
+
+        except Exception as erro_ordenacao:
+            log.error("Erro na ordenação!")
+            raise erro_ordenacao
+
+        log.info("Descendo até o final da página..")
         self.descer_final_da_pagina(driver=driver)
 
         links = driver.find_elements(By.ID, "link-botao")
-        for link in links:
-            link.click()
+
+        with Progress(TextColumn("[progress.description]{task.description}"), BarColumn(), TextColumn("[progress.percentage]{task.percentage:>3.0f}%")) as progress:
+            task = progress.add_task("[cyan]Baixando Psats através dos links...", total=len(links))
+
+            for link in links:
+                link.click()
+                progress.advance(task, 1)
+                time.sleep(0.2)
+
+        log.info("[bright_green]Psats baixados!")
 
         driver.quit()
