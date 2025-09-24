@@ -48,11 +48,16 @@ class ONS:
     def caminho_xpath_concordo(self) -> str:
         """Caminho XPATH para botão 'Concordo'."""
         return "/html/body/form/div[12]/div/div[5]/button"
+    
+    @property
+    def caminho_xpath_ver_mais(self) -> str:
+        """Caminho XPATH para botão 'Ver mais'."""
+        return "/html/body/form/div[12]/div/div[3]/div/div/div/div[1]/div[1]/div/div[4]/div[2]/a"
 
     @property
     def caminho_xpath_produto(self) -> str:
         """Caminho XPATH para botão de filtro 'Produto'."""
-        return "//label[contains(text(), 'Histórico de Precipitação por Satélite')]"
+        return "//label[contains(text(), 'Histórico de Precipitação por Satélite – ONS')]"
 
     @staticmethod
     def descer_final_da_pagina(driver: WebDriver) -> None:
@@ -144,6 +149,7 @@ class ONS:
             driver.find_element(By.XPATH, self.caminho_xpath_mais_recentes).click()
             driver.find_element(By.XPATH, self.caminho_xpath_concordo).click()
             time.sleep(0.5)
+            driver.find_element(By.XPATH, self.caminho_xpath_ver_mais).click()
             driver.find_element(By.XPATH, self.caminho_xpath_produto).click()
 
             log.info("[bright_green]Ordenação concluída!")
